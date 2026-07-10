@@ -1,136 +1,140 @@
-![Banking Modern Data Stack Banner](./docs/banner.png)
+# 🏦 Banking Modern Data Stack
 
-# Banking Modern Data Stack Pipeline
+![Snowflake](https://img.shields.io/badge/Snowflake-29B5E8?logo=snowflake&logoColor=white)
+![DBT](https://img.shields.io/badge/dbt-FF694B?logo=dbt&logoColor=white)
+![Apache Airflow](https://img.shields.io/badge/Apache%20Airflow-017CEE?logo=apacheairflow&logoColor=white)
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-231F20?logo=apachekafka&logoColor=white)
+![Debezium](https://img.shields.io/badge/Debezium-EF3B2D?logo=apache&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-000000?logo=githubactions&logoColor=white)
 
-This project is an end-to-end modern data engineering pipeline for a simulated banking domain. It demonstrates how to orchestrate data from generation (OLTP) all the way to a Data Warehouse for analytics using a robust, containerized tech stack.
+---
 
-## 🏗️ Architecture & Data Flow
+## 📌 Project Overview
+This project demonstrates an **end-to-end modern data stack pipeline** for a **Banking domain**.  
+We simulate **customer, account, and transaction data**, stream changes in real time, transform them into analytics-ready models, and visualize insights — following **best practices of CI/CD and data warehousing**.
 
-The architecture follows a classic CDC (Change Data Capture) and ELT (Extract, Load, Transform) pattern. 
+👉 Think of it as a **real-world banking data ecosystem** built on modern data tools.  
 
-### Data Flow Diagram
+---
 
-```mermaid
-flowchart TD
-    %% Define colors and styles
-    classDef generator fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef database fill:#3366cc,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef streaming fill:#ff9900,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef storage fill:#ff4d4d,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef warehouse fill:#29b5e8,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef orchestrator fill:#00a3a3,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef transform fill:#ff6633,stroke:#fff,stroke-width:2px,color:#fff;
+## 🏗️ Architecture  
 
-    A[Python Data Generator\n(Faker)]:::generator -->|Inserts Fake Data| B[(PostgreSQL\nOLTP)]:::database
-    B -->|CDC Events| C[Debezium\nKafka Connect]:::streaming
-    C -->|Streams| D(Kafka Topics):::streaming
-    D -->|Consumes| E[Python Consumer]:::generator
-    E -->|Writes Parquet| F[(MinIO Data Lake\nS3 Compatible)]:::storage
-    F -->|Extracts/Downloads| G[Airflow DAG]:::orchestrator
-    G -->|Loads Data| H[(Snowflake\nData Warehouse)]:::warehouse
-    H -->|Transforms| I[dbt Models\n(Analytics)]:::transform
-    
-    subgraph Data Generation & CDC
-    A
-    B
-    C
-    D
-    end
-    
-    subgraph Ingestion to Data Lake
-    E
-    F
-    end
-    
-    subgraph ELT & Orchestration
-    G
-    H
-    I
-    end
+<img width="5647" height="3107" alt="Architecture" src="https://github.com/user-attachments/assets/7521ea8a-451e-46ff-9db0-71dd6ddf8181" />
+
+
+**Pipeline Flow:**
+1. **Data Generator** → Simulates banking transactions, accounts & customers (via Faker).  
+2. **Kafka + Debezium** → Streams change data (CDC) into MinIO (S3-compatible storage).  
+3. **Airflow** → Orchestrates data ingestion & snapshots into Snowflake.  
+4. **Snowflake** → Cloud Data Warehouse (Bronze → Silver → Gold).  
+5. **DBT** → Applies transformations, builds marts & snapshots (SCD Type-2).  
+6. **CI/CD with GitHub Actions** → Automated tests, build & deployment.  
+
+---
+
+## ⚡ Tech Stack
+- **Snowflake** → Cloud Data Warehouse  
+- **DBT** → Transformations, testing, snapshots (SCD Type-2)  
+- **Apache Airflow** → Orchestration & DAG scheduling  
+- **Apache Kafka + Debezium** → Real-time streaming & CDC  
+- **MinIO** → S3-compatible object storage  
+- **Postgres** → Source OLTP system  
+- **Python (Faker)** → Data simulation  
+- **Docker & docker-compose** → Containerized setup  
+- **Git & GitHub Actions** → CI/CD workflows  
+
+---
+
+## ✅ Key Features
+- **PostgreSQL OLTP**: Source relational database with ACID guarantees (customers, accounts, transactions)  
+- **Simulated banking system**: customers, accounts, and transactions  
+- **Change Data Capture (CDC)** via Kafka + Debezium (capturing Postgres WAL)  
+- **Raw → Staging → Fact/Dimension** models in DBT  
+- **Snapshots for history tracking** (slowly changing dimensions)  
+- **Automated pipeline orchestration** using Airflow  
+- **CI/CD pipeline** with dbt tests + GitHub Actions  
+
+---
+
+## 📂 Repository Structure
+```text
+banking-modern-datastack/
+├── .github/workflows/         # CI/CD pipelines (ci.yml, cd.yml)
+├── banking_dbt/              # DBT project
+│   ├── models/
+│   │   ├── staging/           # Staging models
+│   │   ├── marts/             # Facts & dimensions
+│   │   └── sources.yml
+│   ├── snapshots/             # SCD2 snapshots
+│   └── dbt_project.yml
+├── consumer
+│   └── kafka_to_minio.py
+├── data-generator/            # Faker-based data simulator
+│   └── faker_generator.py
+├── docker/                    # Airflow DAGs, plugins, etc.
+│   ├── dags/                  # DAGs (minio_to_snowflake, scd_snapshots)
+├── kafka-debezium/            # Kafka connectors & CDC logic
+│   └── generate_and_post_connector.py
+├── postgres/                  # Postgres schema (OLTP DDL & seeds)
+│   └── schema.sql
+├── .gitignore
+├── docker-compose.yml         # Containerized infra
+├── dockerfile-airflow.dockerfile
+├── requirements.txt
+└── README.md
 ```
 
-### Step-by-Step Data Flow
+---
 
-1. **Data Generation (The Source)**
-   The pipeline starts with a Python script (`data-generator/faker_generator.py`) utilizing the `Faker` library. This acts as our source system, continuously generating synthetic banking data such as new customers, newly created accounts, and live transactions. This data is written directly into a **PostgreSQL** database, which simulates a bank's operational, highly transactional database (OLTP).
+## ⚙️ Step-by-Step Implementation  
 
-2. **Change Data Capture (CDC)**
-   Instead of doing bulky batch extracts from the database, we use **Debezium**, which connects to Postgres and listens to its Write-Ahead Log (WAL). Any time an `INSERT`, `UPDATE`, or `DELETE` occurs in Postgres, Debezium instantly captures the change at a row level and pushes it as an event into an **Apache Kafka** topic. This provides real-time replication without taxing the source database.
+### **1. Data Simulation**  
+- Generated synthetic banking data (**customers, accounts, transactions**) using **Faker**.  
+- Inserted data into **PostgreSQL (OLTP)** so the system behaves like a real transactional database (**ACID, constraints**).  
+- Controlled generation via `config.yaml`.  
 
-3. **Data Ingestion to Data Lake**
-   A standalone Python consumer (`consumer/kafka_to_minio.py`) continuously subscribes to these Kafka topics. As messages arrive, the consumer batches them and writes them out into **MinIO**—an S3-compatible object storage service—acting as our Data Lake. The data is saved in columnar **Parquet** format, heavily partitioned by date to optimize future read queries.
+---
 
-4. **Orchestration & ELT**
-   **Apache Airflow** functions as the brain of the operation. We have a scheduled DAG (`minio_to_snowflake_dag.py`) that periodically runs. It connects to the MinIO Data Lake, downloads the freshly landed Parquet files, and securely loads them into **Snowflake** (our cloud Data Warehouse). 
+### **2. Kafka + Debezium CDC**  
+- Set up **Kafka Connect & Debezium** to capture changes from **Postgres**.  
+- Streamed **CDC events** into **MinIO**.  
 
-5. **Analytics Engineering**
-   Once the raw data is inside Snowflake, we use **dbt (data build tool)**. dbt connects to Snowflake and executes pre-defined SQL models. It handles the "T" in ELT by joining, cleansing, and transforming the raw JSON/Parquet tables into structured dimensional models (e.g., facts and dimensions) ready for BI dashboards and downstream analytics.
+---
 
-## 🛠️ Technology Stack
+### **3. Airflow Orchestration**  
+- Built DAGs to:  
+  - Ingest **MinIO data → Snowflake (Bronze)**.  
+  - Schedule **snapshots & incremental loads**.  
 
-| Component | Technology | Purpose |
-| --- | --- | --- |
-| **Data Generation** | Python (Faker) | Generates synthetic customers, accounts, and transactions. |
-| **Source Database** | PostgreSQL | Simulates the operational transactional database (OLTP). |
-| **CDC (Change Data Capture)** | Debezium & Kafka Connect | Captures row-level changes in Postgres and streams them to Kafka. |
-| **Message Broker** | Apache Kafka & Zookeeper | Scalable event streaming platform for real-time data integration. |
-| **Data Lake** | MinIO | S3-compatible object storage to store raw data as Parquet files. |
-| **Orchestration** | Apache Airflow | Schedules and orchestrates data loads from MinIO to Snowflake. |
-| **Data Warehouse** | Snowflake | Cloud data platform where data is ingested and modeled. |
-| **Data Transformation** | dbt (data build tool) | Performs the "T" in ELT, transforming raw data into analytics-ready models. |
-| **Containerization** | Docker & Docker Compose | Runs all local services reliably across environments. |
+---
 
-## 📂 Project Structure
+### **4. Snowflake Warehouse**  
+- Organized into **Bronze → Silver → Gold layers**.  
+- Created **staging schemas** for ingestion.  
 
-- `data-generator/`: Python script to generate fake banking transactions and users, storing them in PostgreSQL.
-- `postgres/`: Schema initialization scripts (`schema.sql`) for PostgreSQL.
-- `kafka-debezium/`: Kafka Connect configurations to listen to PostgreSQL and produce CDC streams.
-- `consumer/`: A Python Kafka Consumer that reads Kafka topics and writes the data to MinIO as Parquet files.
-- `docker/`: Contains Airflow configurations, plugins, logs, and DAGs (e.g., `minio_to_snowflake_dag.py`).
-- `banking_dbt/`: dbt project folder containing transformations (models, tests, snapshots).
-- `docker-compose.yml`: The main configuration file to spin up Zookeeper, Kafka, Debezium, Postgres, MinIO, and Airflow.
+---
 
-## 🚀 Getting Started
+### **5. DBT Transformations**  
+- **Staging models** → cleaned source data.  
+- **Dimension & fact models** → built marts.  
+- **Snapshots** → tracked history of accounts & customers.  
 
-### Prerequisites
+---
 
-- Docker and Docker Compose
-- Python 3.9+
-- A Snowflake Account
+### **6. CI/CD with GitHub Actions**  
+- **ci.yml** → Lint, dbt compile, run tests.  
+- **cd.yml** → Deploy DAGs & dbt models on merge.  
 
-### Setup Instructions
+---
 
-1. **Configure Environment Variables:**
-   Create `.env` files where required (e.g., `data-generator`, `consumer`, Airflow environment) by copying the template or defining the necessary secrets (Postgres passwords, Snowflake credentials, MinIO keys).
+## 📊 Final Deliverables  
+- **Automated CDC pipeline** from Postgres → Snowflake  
+- **DBT models** (facts, dimensions, snapshots)  
+- **Orchestrated DAGs in Airflow**  
+- **Synthetic banking dataset** for demos  
+- **CI/CD workflows** ensuring reliability  
 
-2. **Start the Infrastructure:**
-   Run the following command to spin up all the services (Kafka, Postgres, MinIO, Airflow, Debezium):
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Verify Services:**
-   - **Postgres:** Available on `localhost:5432`
-   - **Kafka:** Available on `localhost:9092` (Internal) and `29092` (Host)
-   - **MinIO Console:** Available on `localhost:9001`
-   - **Airflow Web UI:** Available on `localhost:8080`
-
-4. **Start Data Generator:**
-   Run the Python script in `data-generator/` to start feeding fake data into Postgres.
-   
-5. **Start Kafka Consumer:**
-   Run the consumer script in `consumer/` to capture Kafka topics and dump Parquet files into MinIO.
-
-6. **Trigger Airflow DAGs:**
-   Log into the Airflow UI, enable the `minio_to_snowflake_banking` DAG to load the data from MinIO into your Snowflake warehouse.
-
-7. **Run dbt Models:**
-   Once the data is in Snowflake, navigate to `banking_dbt` and run:
-   ```bash
-   dbt run
-   dbt test
-   ```
-
-## 📝 License
-
-This project is licensed under the MIT License.
+---
