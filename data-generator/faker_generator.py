@@ -4,7 +4,6 @@ from decimal import Decimal, ROUND_DOWN
 from faker import Faker
 import random
 import argparse
-import sys
 import os
 from dotenv import load_dotenv
 import traceback
@@ -119,7 +118,7 @@ try:
 except KeyboardInterrupt:
     print("\nInterrupted by user.")
 
-except Exception as e:
+except Exception:
     print("\nERROR:")
     traceback.print_exc()
 
