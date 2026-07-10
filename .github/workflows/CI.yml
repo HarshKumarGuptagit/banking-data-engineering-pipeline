@@ -71,4 +71,4 @@ jobs:
         run: |
           cd banking_dbt
           dbt deps
-          dbt compile
+          dbt compile 
