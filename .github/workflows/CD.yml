@@ -53,7 +53,7 @@ jobs:
           EOL
 
       # ------------------------
-      # Deploy dbt project
+      # Deploy dbt project 
       # ------------------------
       - name: dbt run + test (prod)
         run: |
