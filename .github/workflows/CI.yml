@@ -68,7 +68,7 @@ jobs:
           EOL
 
       - name: dbt compile (validation)
-        run: |
+        run: | 
           cd banking_dbt
           dbt deps
-          dbt compile
+          dbt compile 
