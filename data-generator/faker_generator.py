@@ -118,7 +118,7 @@ try:
 except KeyboardInterrupt:
     print("\nInterrupted by user.")
 
-except Exception:
+except Exception: 
     print("\nERROR:")
     traceback.print_exc()
 
