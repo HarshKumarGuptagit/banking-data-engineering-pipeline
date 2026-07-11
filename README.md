@@ -114,8 +114,12 @@ The reporting layer consists of a Looker Studio dashboard that maps analytical l
 🔗 **Live Dashboard Link:** **[Customer Transactions & Account Analytics Dashboard](https://datastudio.google.com/u/0/reporting/73aefbee-18e4-45a7-9f40-908c2d859adb/page/RHd3F)**
 
 ### 📊 Dashboard Preview
-<p align="center"> <img src="Looker Dashboard\Looker_preview.png" width="90%" alt="Looker Studio Dashboard Preview" /> </p>
-
+<p align="center">
+  <img src="Looker Dashboard/Looker_preview.png"
+       width="200"
+       height="500"
+       alt="Looker Studio Dashboard Preview" />
+</p>
 ## Future Improvements
 
 * Terraform
