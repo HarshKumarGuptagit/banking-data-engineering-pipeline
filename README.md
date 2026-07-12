@@ -120,14 +120,6 @@ The reporting layer consists of a Looker Studio dashboard that maps analytical l
        height="500"
        alt="Looker Studio Dashboard Preview" />
 </p>
-## Future Improvements
-
-* Terraform
-* Kubernetes
-* Great Expectations
-* Apache Iceberg
-* Prometheus & Grafana
-* Data Quality Monitoring
 
 ## Learning Outcomes
 
